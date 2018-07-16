@@ -2,7 +2,7 @@ import sys
 import filehandle
 import phlex
 import phparser
-import token
+import phtoken
 
 
 def ph_main(source_path):
@@ -10,8 +10,8 @@ def ph_main(source_path):
 	if code.isspace() or code == "":
 		return
 	phlex.init(source_path, code)
-	while phlex.token != token.TOKEN_EOF:
-		print(phparser.parse_expr())
+	while phlex.token != phtoken.TOKEN_EOF:
+		phlex.next_token()
 
 if __name__ == '__main__':
 	args = sys.argv

@@ -1,5 +1,5 @@
 import phlex
-from token import *
+from phtoken import *
 
 
 def syntax_error(msg):

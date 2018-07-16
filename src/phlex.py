@@ -1,5 +1,5 @@
 from filehandle import OS_PLATFORM
-from token import *
+from phtoken import *
 
 filename = None
 line = 1
@@ -86,8 +86,8 @@ def next_token():
 			while cur_char is not None and cur_char.isalnum() or cur_char == '_':
 				val += cur_char
 				next_char()
-			if val in ph_reserved.keys():
-				token = Token(ph_reserved[val], val)
+			if val in ph_keywords:
+				token = Token(TOKEN_KEYWORD, val)
 			else:
 				token = Token(TOKEN_NAME, val)
 
@@ -105,7 +105,7 @@ def next_token():
 			if cur_char != '\'':
 				phlexer_error('Missing closing single-quote after ' + char)
 			next_char()
-			token = Token(TOKEN_CHAR, char)
+			token = Token(TOKEN_INT, ord(char))
 
 		elif cur_char == '"':
 			string = ""
@@ -128,175 +128,171 @@ def next_token():
 # UNSURE CODE: CHECK LATER ON HOW TO TOKENIZE SYMBOLS, FOR NOW LEXER WILL SCAN ONE BY ONE #
 ###########################################################################################
 		else:
-			symbol = ''
+			symbol = TOKEN_EOF
 			if cur_char == '+':
 				if lookahead == '+':
-					symbol = '++'
+					symbol = TOKEN_INC
 					next_char()
 				elif lookahead == '=':
-					symbol = '+='
+					symbol = TOKEN_ADD_ASSIGN
 					next_char()
 				else:
-					symbol = '+'
+					symbol = TOKEN_ADD
 				next_char()
 			elif cur_char == '-':
 				if lookahead == '-':
-					symbol = '--'
+					symbol = TOKEN_DEC
 					next_char()
 				elif lookahead == '=':
-					symbol = '-='
+					symbol = TOKEN_SUB_ASSIGN
 					next_char()
 				elif lookahead == '>':
-					symbol = '->'
+					symbol = TOKEN_ARROW
 					next_char()
 				else:
-					symbol = '-'
+					symbol = TOKEN_SUB
 				next_char()
 			elif cur_char == '*':
 				if lookahead == '=':
-					symbol = '*='
+					symbol = TOKEN_MUL_ASSIGN
 					next_char()
 				else:
-					symbol = '*'
+					symbol = TOKEN_MUL
 				next_char()
 			elif cur_char == '/':
 				if lookahead == '=':
-					symbol = '/='
+					symbol = TOKEN_DIV_ASSIGN
 					next_char()
 				else:
-					symbol = '/'
+					symbol = TOKEN_DIV
 				next_char()
 			elif cur_char == '%':
 				if lookahead == '=':
-					symbol = '%='
+					symbol = TOKEN_MOD_ASSIGN
 					next_char()
 				else:
-					symbol = '%'
+					symbol = TOKEN_MOD
 				next_char()
 			elif cur_char == '=':
 				if lookahead == '=':
-					symbol = '=='
+					symbol = TOKEN_EQ
 					next_char()
 				else:
-					symbol = '='
+					symbol = TOKEN_ASSIGN
 				next_char()
 			elif cur_char == '<':
 				if lookahead == '=':
-					symbol = '<='
+					symbol = TOKEN_LE
 					next_char()
 				elif lookahead == '<':
 					next_char()
 					if lookahead == '=':
-						symbol = '<<='
+						symbol = TOKEN_LSHIFT_ASSIGN
 						next_char()
 					else:
-						symbol = '<<'
+						symbol = TOKEN_LSHIFT
 				else:
-					symbol == '<'
+					symbol == TOKEN_LT
 				next_char()
 			elif cur_char == '>':
 				if lookahead == '=':
-					symbol = '>='
+					symbol = TOKEN_GE
 					next_char()
 				elif lookahead == '>':
 					next_char()
 					if lookahead == '=':
-						symbol = '>>='
+						symbol = TOKEN_RSHIFT_ASSIGN
 						next_char()
 					else:
-						symbol = '>>'
+						symbol = TOKEN_RSHIFT
 				else:
-					symbol == '>'
+					symbol == TOKEN_GT
 				next_char()
 			elif cur_char == '!':
 				if lookahead == '=':
-					symbol = '!='
+					symbol = TOKEN_NE
 					next_char()
 				else:
-					symbol = '!'
+					symbol = TOKEN_NOT
 				next_char()
 			elif cur_char == '&':
 				if lookahead == '&':
-					symbol = '&&'
+					symbol = TOKEN_AND_AND
 					next_char()
 				elif lookahead == '=':
-					symbol = '&='
+					symbol = TOKEN_AND_ASSIGN
 					next_char()
 				else:
-					symbol = '&'
+					symbol = TOKEN_AND
 				next_char()
 			elif cur_char == '|':
 				if lookahead == '|':
-					symbol = '||'
+					symbol = TOKEN_OR_OR
 					next_char()
 				elif lookahead == '=':
-					symbol = '|='
+					symbol = TOKEN_OR_ASSIGN
 					next_char()
 				else:
-					symbol = '|'
+					symbol = TOKEN_OR
 				next_char()
 			elif cur_char == '^':
 				if lookahead == '=':
-					symbol = '^='
+					symbol = TOKEN_XOR_ASSIGN
 					next_char()
 				else:
-					symbol = '^'
+					symbol = TOKEN_XOR
 				next_char()
 			elif cur_char == '~':
-				if lookahead == '=':
-					symbol = '~='
-					next_char()
-				else:
-					symbol = '~'
+				symbol = TOKEN_INV
 				next_char()
 			elif cur_char == '(':
-				symbol = '('
+				symbol = TOKEN_LPAREN
 				next_char()
 			elif cur_char == ')':
-				symbol = ')'
+				symbol = TOKEN_RPAREN
 				next_char()
 			elif cur_char == '[':
-				symbol = '['
+				symbol = TOKEN_LBRACK
 				next_char()
 			elif cur_char == ']':
-				symbol = ']'
+				symbol = TOKEN_RBRACK
 				next_char()
 			elif cur_char == '{':
-				symbol = '{'
+				symbol = TOKEN_LBRACE
 				next_char()
 			elif cur_char == '}':
-				symbol = '}'
+				symbol = TOKEN_RBRACE
 				next_char()
 			elif cur_char == '.':
 				if lookahead == '.':
 					next_char()
 					if lookahead == '.':
-						symbol = '...'
+						symbol = TOKEN_RANGE
 						next_char()
 					else:
 						phlexer_error('Invalid symbol \'..\'')
 				else:
-					symbol = '.'
+					symbol = TOKEN_DOT
 				next_char()
 			elif cur_char == ',':
-				symbol = ','
+				symbol = TOKEN_COMMA
 				next_char()
 			elif cur_char == ';':
-				symbol = ';'
+				symbol = TOKEN_SEMICOLON
 				next_char()
 			elif cur_char == ':':
 				if lookahead == '=':
-					symbol = ':='
+					symbol = TOKEN_COLON_ASSIGN
 					next_char()
 				else:
-					symbol = ':'
+					symbol = TOKEN_COLON
 				next_char()
 
-			token = Token(TOKEN_SYM, symbol)
+			token = Token(symbol, STR_TOKEN_TYPE[symbol])
 
 
 	except AttributeError as e:
-		if e.message.split(' ')[0] == "'NoneType'":
+		if e.args[0].split(' ')[0] == "'NoneType'":
 			token = Token(TOKEN_EOF, "")
 		else:
 			raise e
