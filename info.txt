@@ -1,0 +1,147 @@
+Grammar:
+
+base_type
+    : NAME
+    | FUNCTION '(' (type (',' type)*)? ')' ('->' type)?
+    | '(' type ')'
+    ;
+
+type
+    : base_type ('[' expr? ']' | '*')*
+    ;
+
+####################################################
+
+typespec
+    : NAME | '(' ':' type ')'
+    ;
+
+paren_expr
+    : '(' expr ')'
+    ;
+
+operand_expr
+    : INT
+    | FLOAT
+    | STR
+    | NAME
+    | typespec? '{' expr (',' expr)* '}'
+    | paren_expr
+    | SIZEOF paren_expr
+    ;
+
+base_expr
+    : operand_expr ('(' (expr (',' expr)*)? ')' | '[' expr ']' | '.' NAME)*
+    ;
+
+unary_expr
+    : (unary_op unary_expr)
+    | base_expr
+    ;
+
+range_expr
+    : unary_expr ('..' unary_expr)?
+    ;
+
+mul_expr
+    : range_expr (mul_op range_expr)*
+    ;
+
+add_expr
+    : mul_expr (add_op mul_expr)*
+    ;
+
+cmp_expr
+    : add_expr (cmp_op add_expr)*
+    ;
+
+and_expr
+    : cmp_expr ('&&' cmp_expr)*
+    ;
+
+or_expr
+    : and_expr ('||' and_expr)*
+    ;
+
+ternary_expr
+    : or_expr ('?' ternary_expr ':' ternary_expr)?
+    ;
+
+expr
+    : ternary_expr
+    ;
+
+###############################################################
+
+assign_op
+    : TOKEN_ASSIGN | TOKEN_COLON_ASSIGN | TOKEN_OR_ASSIGN ...
+    ;
+
+switch_case
+    : (CASE expr | DEFAULT) ':' stmt*
+    ;
+
+stmt
+    : context_independent_decl
+    | IF paren_expr stmt_block (ELSE IF paren_expr stmt_block)* (ELSE stmt_block)?
+    | WHILE paren_expr stmt_block
+    | FOR '(' stmt? ';' expr? ';' stmt? ')' stmt_block
+    | DO stmt_block WHILE paren_expr ';'
+    | SWITCH paren_expr '{' switch_case* '}'
+    | RETURN expr? ';'
+    | BREAK ';'
+    | CONTINUE ';'
+    | stmt_block
+    | expr (INC | DEC | assign_op expr)?
+    ;
+
+stmt_block
+    : '{' stmt* '}'
+    ;
+
+##########################################################
+
+func_decl
+    : '(' func_args? ')' stmt_block
+    ;
+
+var_decl
+    : NAME (':' type ('=' expr)? | '=' expr) ';'
+    ;
+
+const_decl
+    : NAME '=' expr ';'
+    ;
+
+aggregate_field
+    : (NAME ':' type | data_structure_decl) ';'
+    ;
+
+aggregate_decl
+    : NAME '{' aggregate_field* '}'
+    ;
+
+enum_decl
+    : NAME '{' NAME (',' NAME)* ','? '}'
+    ;
+
+data_structure_decl
+    : (STRUCT | UNION) aggregate_decl
+    | ENUM enum_decl
+    ;
+
+typedef_decl
+    : NAME '=' type ';'
+    ;
+
+context_independent_decl
+    : data_structure_decl
+    | VAR var_decl
+    | CONST const_decl
+    | TYPEDEF typedef_decl
+    ;
+
+decl
+    : context_independent_decl
+    | FUNCTION func_decl
+    ;

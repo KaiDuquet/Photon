@@ -12,7 +12,6 @@ lookahead = None
 token = None
 
 escapable_chars = ['n', 'r', 't', 'v', 'f', 'b', 'a', '\\', '\'', '"', '?']
-punctuation = set('!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~')
 
 
 def init(arg_filename, arg_source):
@@ -50,7 +49,7 @@ def next_char():
 
 def next_token():
 	global filename, line, column, source, source_length, lex_pos, cur_char, lookahead, token
-	global escapable_chars, punctuation
+	global escapable_chars
 	try:
 		if cur_char.isspace():
 			while cur_char is not None and cur_char.isspace():
@@ -265,12 +264,8 @@ def next_token():
 				next_char()
 			elif cur_char == '.':
 				if lookahead == '.':
+					symbol = TOKEN_RANGE
 					next_char()
-					if lookahead == '.':
-						symbol = TOKEN_RANGE
-						next_char()
-					else:
-						phlexer_error('Invalid symbol \'..\'')
 				else:
 					symbol = TOKEN_DOT
 				next_char()

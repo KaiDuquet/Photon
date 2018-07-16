@@ -57,7 +57,7 @@ STR_TOKEN_TYPE = {
 	TOKEN_COLON 		: ':',
 	TOKEN_SEMICOLON		: ';',
 	TOKEN_DOT			: '.',
-	TOKEN_RANGE			: '...',
+	TOKEN_RANGE			: '..',
 	TOKEN_COMMA			: ',',
 	TOKEN_NOT 			: '!',
 	TOKEN_DIV 			: '/',
