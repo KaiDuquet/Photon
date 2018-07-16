@@ -101,8 +101,11 @@ stmt_block
 
 ##########################################################
 
+func_args
+    : NAME ':' type (',' NAME ':' type)* 
+
 func_decl
-    : '(' func_args? ')' stmt_block
+    : NAME '(' func_args? ')' ('->' type)? stmt_block
     ;
 
 var_decl
@@ -121,8 +124,12 @@ aggregate_decl
     : NAME '{' aggregate_field* '}'
     ;
 
+enum_items
+    : NAME (',' NAME)*
+    ;
+
 enum_decl
-    : NAME '{' NAME (',' NAME)* ','? '}'
+    : NAME '{' enum_items ','? '}'
     ;
 
 data_structure_decl
