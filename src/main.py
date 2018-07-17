@@ -3,7 +3,7 @@ import filehandle
 import phlex
 import phparser
 import phtoken
-
+import phprint
 
 def ph_main(source_path):
 	code = filehandle.read_file(source_path)
@@ -11,7 +11,8 @@ def ph_main(source_path):
 		return
 	phlex.init(source_path, code)
 	while phlex.token != phtoken.TOKEN_EOF:
-		phparser.parse_decl()
+		phprint.print_decl(phparser.parse_decl())
+		print()
 
 if __name__ == '__main__':
 	args = sys.argv

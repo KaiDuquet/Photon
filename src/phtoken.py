@@ -125,6 +125,8 @@ ph_keywords = [
 	'switch',
 	'case',
 	'default',
+	'var',
+	'const'
 ]
 
 

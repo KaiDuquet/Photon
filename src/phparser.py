@@ -131,6 +131,15 @@ def parse_operand_expr():
 		return expr
 	elif is_token(TOKEN_LBRACE):
 		return parse_compound_expr(None)
+	elif match_keyword('sizeof'):
+		expect_token(TOKEN_LPAREN)
+		if match_token(TOKEN_COLON):
+			type_ = parse_type()
+			expect_token(TOKEN_RPAREN)
+			return ExprSizeofType(type_)
+		expr = parse_expr()
+		expect_token(TOKEN_RPAREN)
+		return ExprSizeofExpr(expr)
 	else:
 		syntax_error('Unexpected token %s in expression', str(phlex.token))
 
@@ -147,7 +156,7 @@ def parse_base_expr():
 			expr = ExprCall(expr, call_args)
 		elif match_token(TOKEN_LBRACK):
 			index = parse_expr()
-			expect_token(TOKEN_RPAREN)
+			expect_token(TOKEN_RBRACK)
 			expr = ExprIndex(expr, index)
 		else:
 			next_token()
@@ -230,7 +239,7 @@ def parse_ternary_expr():
 	return expr
 
 def parse_expr():
-	parse_ternary_expr()
+	return parse_ternary_expr()
 
 #########################################################################
 
@@ -240,7 +249,7 @@ def parse_stmt_block():
 	while not is_token(TOKEN_RBRACE):
 		stmts.append(parse_stmt())
 	expect_token(TOKEN_RBRACE)
-	return StmtBlock(stmts)
+	return StmtList(stmts)
 
 def is_assign_op():
 	return TOKEN_ASSIGN <= phlex.token.t_type and phlex.token.t_type <= TOKEN_RSHIFT_ASSIGN
@@ -293,7 +302,7 @@ def parse_for_stmt():
 			if update.op == TOKEN_COLON_ASSIGN:
 				syntax_error("Infered type initializations are not allowed in 'for' update clauses")
 	expect_token(TOKEN_RPAREN)
-	return StmtFor(init, cond, update)
+	return StmtFor(init, cond, update, parse_stmt_block())
 
 def parse_do_while_stmt():
 	block = parse_stmt_block()
@@ -367,7 +376,7 @@ def parse_stmt():
 	elif match_keyword('typedef'):
 		return StmtDecl(parse_typedef_decl())
 	elif is_token(TOKEN_LBRACE):
-		return parse_stmt_block()
+		return StmtBlock(parse_stmt_block())
 	else:
 		stmt = parse_base_stmt()
 		expect_token(TOKEN_SEMICOLON)
@@ -424,18 +433,21 @@ def parse_enum_decl():
 
 def parse_aggregate_field():
 	if is_token(TOKEN_NAME):
-		name = parse_name()
+		names = []
+		names.append(parse_name())
+		while match_token(TOKEN_COMMA):
+			names.append(parse_name())
 		expect_token(TOKEN_COLON)
 		type_ = parse_type()
 		expect_token(TOKEN_SEMICOLON)
-		return AggregateField(name, type_, None)
+		return AggregateField(names, type_, None)
 	else:
 		if match_keyword('struct'):
-			return parse_struct_decl()
+			return AggregateField(None, None, parse_struct_decl())
 		elif match_keyword('union'):
-			return parse_union_decl()
+			return AggregateField(None, None, parse_union_decl())
 		elif match_keyword('enum'):
-			return parse_enum_decl()
+			return AggregateField(None, None, parse_enum_decl())
 		else:
 			syntax_error("Invalid aggregate field '%s'" % str(phlex.token))
 

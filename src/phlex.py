@@ -121,7 +121,7 @@ def next_token():
 					string += cur_char
 				next_char()
 			next_char()
-			token = Token(TOKEN_STRING, string)
+			token = Token(TOKEN_STR, string)
 
 ###########################################################################################
 # UNSURE CODE: CHECK LATER ON HOW TO TOKENIZE SYMBOLS, FOR NOW LEXER WILL SCAN ONE BY ONE #
@@ -291,4 +291,3 @@ def next_token():
 			token = Token(TOKEN_EOF, "")
 		else:
 			raise e
-	print(token)

@@ -8,6 +8,9 @@ class Typespec(object):
     def __init__(self, kind):
         self.kind = kind
 
+    def __eq__(self, other):
+        return self.kind == other
+
 class TypespecName(Typespec):
     """docstring for TypespecName."""
     def __init__(self, name):
@@ -49,6 +52,9 @@ class Decl(object):
         self.kind = kind
         self.name = name
 
+    def __eq__(self, other):
+        return self.kind == other
+
 class FuncArg(object):
     """docstring for FuncArg."""
     def __init__(self, name, type_):
@@ -77,11 +83,11 @@ class DeclEnum(Decl):
 
 class AggregateField(object):
     """docstring for AggregateField."""
-    def __init__(self, name, type_, data_decl):
-        if name is None and type_ is None:
+    def __init__(self, names, type_, data_decl):
+        if names is None and type_ is None:
             self.data_decl = data_decl
         else:
-            self.name = name
+            self.names = names
             self.type_ = type_
 
 class DeclAggregate(Decl):
@@ -123,11 +129,15 @@ STMT_BREAK = "STMT_BREAK"
 STMT_CONTINUE = "STMT_CONTINUE"
 STMT_EXPR = "STMT_EXPR"
 STMT_ASSIGN = "STMT_ASSIGN"
+STMT_BLOCK = "STMT_BLOCK"
 
 class Stmt(object):
     """docstring for Stmt."""
     def __init__(self, kind):
         self.kind = kind
+
+    def __eq__(self, other):
+        return self.kind == other
 
 class StmtAssign(Stmt):
     """docstring for StmtAssign."""
@@ -138,10 +148,16 @@ class StmtAssign(Stmt):
         self.right = right
 
 
-class StmtBlock(object):
-    """docstring for StmtBlock."""
+class StmtList(object):
+    """docstring for StmtList."""
     def __init__(self, stmts):
         self.stmts = stmts
+
+class StmtBlock(Stmt):
+    """docstring for StmtBlock."""
+    def __init__(self, stmt_list):
+        super(StmtBlock, self).__init__(STMT_BLOCK)
+        self.stmt_list = stmt_list
 
 
 class StmtDecl(Stmt):
@@ -245,6 +261,9 @@ class Expr(object):
     """docstring for Expr."""
     def __init__(self, kind):
         self.kind = kind
+
+    def __eq__(self, other):
+        return self.kind == other
 
 class ExprTernary(Expr):
     """docstring for ExprTernary."""
