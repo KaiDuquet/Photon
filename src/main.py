@@ -11,7 +11,7 @@ def ph_main(source_path):
 		return
 	phlex.init(source_path, code)
 	while phlex.token != phtoken.TOKEN_EOF:
-		phlex.next_token()
+		phparser.parse_decl()
 
 if __name__ == '__main__':
 	args = sys.argv

@@ -88,7 +88,7 @@ class DeclAggregate(Decl):
     """docstring for DeclAggregate."""
     def __init__(self, kind, name, fields):
         assert(kind == DECL_STRUCT or kind == DECL_UNION)
-        super(DeclStruct, self).__init__(kind, name)
+        super(DeclAggregate, self).__init__(kind, name)
         self.fields = fields
 
 class DeclVar(Decl):
@@ -122,12 +122,21 @@ STMT_RETURN = "STMT_RETURN"
 STMT_BREAK = "STMT_BREAK"
 STMT_CONTINUE = "STMT_CONTINUE"
 STMT_EXPR = "STMT_EXPR"
-
+STMT_ASSIGN = "STMT_ASSIGN"
 
 class Stmt(object):
     """docstring for Stmt."""
     def __init__(self, kind):
         self.kind = kind
+
+class StmtAssign(Stmt):
+    """docstring for StmtAssign."""
+    def __init__(self, op, left, right):
+        super(StmtAssign, self).__init__(STMT_ASSIGN)
+        self.op = op
+        self.left = left
+        self.right = right
+
 
 class StmtBlock(object):
     """docstring for StmtBlock."""
@@ -197,9 +206,10 @@ class StmtContinue(Stmt):
 
 class SwitchCase(object):
     """docstring for SwitchCase."""
-    def __init__(self, exprs, stmts):
+    def __init__(self, exprs, stmts, is_default):
         self.exprs = exprs
         self.stmts = stmts
+        self.is_default
 
 class StmtSwitch(Stmt):
     """docstring for StmtSwitch."""

@@ -25,7 +25,7 @@ operand_expr
     | FLOAT
     | STR
     | NAME
-    | typespec? '{' expr (',' expr)* '}'
+    | typespec? '{' expr (',' expr)* '}'    // => (NAME | '(' ':' type ')')? '{' expr_list '}'
     | paren_expr
     | SIZEOF paren_expr
     ;
@@ -102,7 +102,7 @@ stmt_block
 ##########################################################
 
 func_args
-    : NAME ':' type (',' NAME ':' type)* 
+    : NAME ':' type (',' NAME ':' type)*
 
 func_decl
     : NAME '(' func_args? ')' ('->' type)? stmt_block
